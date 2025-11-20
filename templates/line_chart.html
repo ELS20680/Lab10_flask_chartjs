@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Line Chart - IoT Dashboard{% endblock %}
+{% block content %}
+<h2>Temperature Trends Over Time</h2>
+<p>This chart displays temperature readings from IoT sensors over the last 24 hours (data from SQLite database).</p>
+
+<div class="chart-container">
+    <canvas id="lineChart"></canvas>
+</div>
+
+<script>
+    fetch('/api/line-data')
+        .then(response => response.json())
+        .then(data => {
+
+            const ctx = document.getElementById('lineChart').getContext('2d');
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(52, 152, 219, 0.4)');
+            gradient.addColorStop(1, 'rgba(52, 152, 219, 0)');
+
+            data.datasets[0].borderColor = 'rgba(52, 152, 219, 1)';
+            data.datasets[0].backgroundColor = gradient;
+            data.datasets[0].borderWidth = 3;
+            data.datasets[0].tension = 0.5;
+            data.datasets[0].pointRadius = 4;
+            data.datasets[0].pointBackgroundColor = 'rgba(41, 128, 185, 1)';
+            data.datasets[0].pointBorderColor = 'rgba(255, 255, 255, 1)';
+            data.datasets[0].pointHoverRadius = 6;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Updated Temperature Monitoring - 24 Hour Period'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            },
+                            ticks: {
+                                maxTicksLimit: 12
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Bar Chart - Intrusion Report{% endblock %}
+
+{% block content %}
+<h2>Security Intrusions Overview (Last 30 Days)</h2>
+<p>This chart shows the distribution of detected intrusion types across IoT systems during the last month.</p>
+
+<div class="chart-container">
+    <canvas id="barChart"></canvas>
+</div>
+
+<script>
+    fetch('/api/bar-data')
+        .then(response => response.json())
+        .then(data => {
+
+            data.labels = ['Brute Force', 'Malware', 'DDoS', 'Unauthorized Access'];
+            data.datasets[0].data = [14, 8, 5, 11];
+            data.datasets[0].backgroundColor = [
+                'rgba(231, 76, 60, 0.8)',
+                'rgba(52, 152, 219, 0.8)',
+                'rgba(155, 89, 182, 0.8)',
+                'rgba(241, 196, 15, 0.8)'
+            ];
+            data.datasets[0].borderColor = [
+                'rgba(231, 76, 60, 1)',
+                'rgba(52, 152, 219, 1)',
+                'rgba(155, 89, 182, 1)',
+                'rgba(241, 196, 15, 1)'
+            ];
+            data.datasets[0].borderWidth = 2;
+
+            const ctx = document.getElementById('barChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Updated Intrusion Types (Last 30 Days)'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Incidents'
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Intrusion Type'
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+</script>
+{% endblock %}

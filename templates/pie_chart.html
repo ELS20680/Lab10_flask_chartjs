@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Pie Chart - IoT Dashboard{% endblock %}
+
+{% block content %}
+<h2>Device Status Distribution</h2>
+<p>This chart shows the distribution of device statuses across all IoT devices (using static data).</p>
+<div class="chart-container">
+    <canvas id="pieChart"></canvas>
+</div>
+
+<script>
+    fetch('/api/pie-data')
+        .then(response => response.json())
+        .then(data => {
+            data.labels = ['Online', 'Idle', 'Fault', 'Updating'];
+            data.datasets[0].data = [18, 7, 4, 2];
+            data.datasets[0].backgroundColor = [
+                'rgba(46, 204, 113, 0.8)',
+                'rgba(52, 152, 219, 0.8)',
+                'rgba(231, 76, 60, 0.8)',
+                'rgba(241, 196, 15, 0.8)'
+            ];
+            data.datasets[0].borderColor = [
+                'rgba(46, 204, 113, 1)',
+                'rgba(52, 152, 219, 1)',
+                'rgba(231, 76, 60, 1)',
+                'rgba(241, 196, 15, 1)'
+            ];
+
+            const ctx = document.getElementById('pieChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Updated IoT Device Status Overview'
+                        }
+                    }
+                }
+            });
+        });
+</script>
+{% endblock %}
